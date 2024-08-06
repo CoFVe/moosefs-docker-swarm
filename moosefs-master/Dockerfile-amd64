@@ -1,0 +1,22 @@
+FROM debian:bullseye-slim
+
+# Install wget and gnupg2
+RUN apt update && apt install -y wget gnupg2
+
+# Add key
+#RUN wget -O - http://ppa.moosefs.com/moosefs.key 2>/dev/null | apt-key add - 2>/dev/null
+RUN wget -O - https://ppa.moosefs.com/moosefs.key | apt-key add -
+RUN echo "deb [arch=amd64] http://ppa.moosefs.com/moosefs-3/apt/debian/bullseye bullseye main" > /etc/apt/sources.list.d/moosefs.list
+
+# Install MooseFS master
+RUN apt update && apt install -y moosefs-master
+RUN apt install -y 
+
+# Expose ports master ports
+EXPOSE 9419 9420 9421
+
+# Add and run start script
+ADD master.sh /usr/sbin/master.sh
+RUN chown root:root /usr/sbin/master.sh ; chmod 700 /usr/sbin/master.sh
+
+CMD ["master.sh"]
